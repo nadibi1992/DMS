@@ -9,14 +9,14 @@
       </button>
       <div>
         <h1 class="text-3xl font-bold text-gray-900">بارگذاری سند جدید</h1>
-        <p class="text-gray-600 mt-1">اطلاعات سند را وارد کنید و فایل را بارگذاری نمایید</p>
+        <p class="text-gray-600 mt-1">اطلاعات کامل سند را وارد کنید</p>
       </div>
     </div>
 
     <form @submit.prevent="handleSubmit" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 space-y-6">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات سند</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات اصلی</h2>
 
           <div class="space-y-4">
             <div>
@@ -28,7 +28,7 @@
                 v-model="form.title"
                 type="text"
                 required
-                placeholder="عنوان سند را وارد کنید"
+                placeholder="عنوان واضح و توصیفی وارد کنید"
                 class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -40,7 +40,7 @@
               <textarea
                 v-model="form.description"
                 rows="4"
-                placeholder="توضیحات تکمیلی درباره سند"
+                placeholder="توضیحات تکمیلی و جزئیات سند"
                 class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               ></textarea>
             </div>
@@ -52,18 +52,22 @@
                   <span class="text-red-500">*</span>
                 </label>
                 <select
-                  v-model="form.category"
+                  v-model="form.category_id"
                   required
                   class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">انتخاب کنید</option>
-                  <option value="contracts">قراردادها</option>
-                  <option value="reports">گزارشات</option>
-                  <option value="minutes">صورتجلسات</option>
-                  <option value="financial">مالی</option>
-                  <option value="hr">پرسنلی</option>
-                  <option value="other">سایر</option>
+                  <option
+                    v-for="category in categories"
+                    :key="category.id"
+                    :value="category.id"
+                  >
+                    {{ category.name }}
+                  </option>
                 </select>
+                <p v-if="selectedCategory" class="text-xs text-gray-600 mt-1">
+                  {{ selectedCategory.description }}
+                </p>
               </div>
 
               <div>
@@ -121,6 +125,117 @@
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">متادیتا</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                نویسنده
+              </label>
+              <input
+                v-model="form.metadata.author"
+                type="text"
+                placeholder="نام نویسنده سند"
+                class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                موضوع
+              </label>
+              <input
+                v-model="form.metadata.subject"
+                type="text"
+                placeholder="موضوع اصلی سند"
+                class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                زبان
+              </label>
+              <select
+                v-model="form.metadata.language"
+                class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">انتخاب کنید</option>
+                <option value="fa">فارسی</option>
+                <option value="en">انگلیسی</option>
+                <option value="ar">عربی</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                سطح محرمانگی
+              </label>
+              <select
+                v-model="form.metadata.confidentialityLevel"
+                class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="public">عمومی</option>
+                <option value="internal">داخلی</option>
+                <option value="confidential">محرمانه</option>
+                <option value="secret">سری</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                تاریخ سند
+              </label>
+              <input
+                v-model="form.metadata.documentDate"
+                type="date"
+                class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                تاریخ انقضا
+              </label>
+              <input
+                v-model="form.metadata.expiryDate"
+                type="date"
+                class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              کلمات کلیدی
+            </label>
+            <input
+              v-model="keywordInput"
+              @keyup.enter="addKeyword"
+              type="text"
+              placeholder="کلمه کلیدی (Enter برای افزودن)"
+              class="block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+            <div v-if="form.metadata.keywords.length > 0" class="flex flex-wrap gap-2 mt-2">
+              <span
+                v-for="(keyword, index) in form.metadata.keywords"
+                :key="index"
+                class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+              >
+                {{ keyword }}
+                <button
+                  type="button"
+                  @click="removeKeyword(index)"
+                  class="hover:text-gray-900"
+                >
+                  <X class="w-4 h-4" />
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 class="text-lg font-semibold text-gray-900 mb-4">بارگذاری فایل</h2>
 
           <div
@@ -134,7 +249,7 @@
               ref="fileInput"
               type="file"
               @change="handleFileSelect"
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png"
               class="hidden"
             />
 
@@ -151,10 +266,10 @@
                 </button>
               </p>
               <p class="text-sm text-gray-600">
-                فرمت‌های مجاز: PDF, Word, Excel, PowerPoint
+                فرمت‌های مجاز: PDF, Word, Excel, PowerPoint, تصاویر، متن
               </p>
               <p class="text-sm text-gray-600">
-                حداکثر حجم: 10 مگابایت
+                حداکثر حجم: 50 مگابایت
               </p>
             </div>
 
@@ -166,6 +281,7 @@
                 <div class="text-right">
                   <p class="text-sm font-medium text-gray-900">{{ selectedFile.name }}</p>
                   <p class="text-xs text-gray-600">{{ formatFileSize(selectedFile.size) }}</p>
+                  <p class="text-xs text-gray-500">{{ selectedFile.type }}</p>
                 </div>
               </div>
               <button
@@ -175,6 +291,19 @@
               >
                 <Trash2 class="w-5 h-5" />
               </button>
+            </div>
+          </div>
+
+          <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm text-gray-600">در حال بارگذاری...</span>
+              <span class="text-sm font-medium text-gray-900">{{ uploadProgress }}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div
+                :style="{ width: uploadProgress + '%' }"
+                class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              ></div>
             </div>
           </div>
         </div>
@@ -190,21 +319,25 @@
             </div>
             <div class="flex gap-2">
               <Info class="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <p>دسته‌بندی مناسب انتخاب کنید تا جستجو آسان‌تر شود</p>
+              <p>دسته‌بندی مناسب را از لیست انتخاب کنید</p>
             </div>
             <div class="flex gap-2">
               <Info class="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <p>برچسب‌ها به یافتن سریع‌تر اسناد کمک می‌کنند</p>
+              <p>متادیتا به مدیریت بهتر اسناد کمک می‌کند</p>
             </div>
             <div class="flex gap-2">
               <Info class="w-5 h-5 text-blue-600 flex-shrink-0" />
-              <p>فایل‌های با فرمت استاندارد بارگذاری کنید</p>
+              <p>برچسب‌ها جستجو را آسان‌تر می‌کنند</p>
+            </div>
+            <div class="flex gap-2">
+              <Info class="w-5 h-5 text-blue-600 flex-shrink-0" />
+              <p>سطح محرمانگی را با دقت انتخاب کنید</p>
             </div>
           </div>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">پیش‌نمایش</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">خلاصه سند</h2>
           <div class="space-y-3 text-sm">
             <div>
               <p class="text-gray-600">عنوان</p>
@@ -212,15 +345,28 @@
             </div>
             <div>
               <p class="text-gray-600">دسته‌بندی</p>
-              <p class="font-medium text-gray-900">{{ getCategoryLabel(form.category) }}</p>
+              <p class="font-medium text-gray-900">
+                {{ selectedCategory?.name || 'انتخاب نشده' }}
+              </p>
             </div>
             <div>
               <p class="text-gray-600">وضعیت</p>
               <p class="font-medium text-gray-900">{{ getStatusLabel(form.status) }}</p>
             </div>
+            <div v-if="form.metadata.confidentialityLevel">
+              <p class="text-gray-600">محرمانگی</p>
+              <p class="font-medium text-gray-900">
+                {{ getConfidentialityLabel(form.metadata.confidentialityLevel) }}
+              </p>
+            </div>
             <div v-if="selectedFile">
               <p class="text-gray-600">فایل</p>
-              <p class="font-medium text-gray-900">{{ selectedFile.name }}</p>
+              <p class="font-medium text-gray-900 truncate">{{ selectedFile.name }}</p>
+              <p class="text-xs text-gray-500">{{ formatFileSize(selectedFile.size) }}</p>
+            </div>
+            <div v-if="form.tags.length > 0">
+              <p class="text-gray-600">تعداد برچسب‌ها</p>
+              <p class="font-medium text-gray-900">{{ form.tags.length }}</p>
             </div>
           </div>
         </div>
@@ -229,7 +375,7 @@
           <button
             type="submit"
             :disabled="!canSubmit || isSubmitting"
-            class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             <Check class="w-5 h-5" />
             <span v-if="!isSubmitting">بارگذاری سند</span>
@@ -238,7 +384,8 @@
           <button
             type="button"
             @click="router.back()"
-            class="w-full px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+            :disabled="isSubmitting"
+            class="w-full px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             انصراف
           </button>
@@ -249,41 +396,79 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ArrowRight, Upload, FileText, Trash2, X, Check, Info } from 'lucide-vue-next';
+import { documentService } from '@/services/documents';
+import type { DocumentCategory } from '@/types';
+import type { DocumentMetadata } from '@/services/documents';
 
 const router = useRouter();
 
 const form = ref({
   title: '',
   description: '',
-  category: '',
-  status: 'draft',
-  tags: [] as string[]
+  category_id: '',
+  status: 'draft' as 'draft' | 'pending',
+  tags: [] as string[],
+  metadata: {
+    author: '',
+    subject: '',
+    keywords: [] as string[],
+    language: 'fa',
+    documentDate: '',
+    expiryDate: '',
+    confidentialityLevel: 'internal' as 'public' | 'internal' | 'confidential' | 'secret'
+  } as DocumentMetadata
 });
 
+const categories = ref<DocumentCategory[]>([]);
 const selectedFile = ref<File | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const isDragging = ref(false);
 const tagInput = ref('');
+const keywordInput = ref('');
 const isSubmitting = ref(false);
+const uploadProgress = ref(0);
+
+const selectedCategory = computed(() =>
+  categories.value.find(c => c.id === form.value.category_id)
+);
 
 const canSubmit = computed(() => {
-  return form.value.title && form.value.category && selectedFile.value;
+  return form.value.title && form.value.category_id && selectedFile.value && !isSubmitting.value;
+});
+
+onMounted(async () => {
+  try {
+    categories.value = await documentService.getCategories();
+  } catch (error) {
+    console.error('Failed to load categories:', error);
+    alert('خطا در بارگذاری دسته‌بندی‌ها');
+  }
 });
 
 const handleFileSelect = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
-    selectedFile.value = target.files[0];
+    const file = target.files[0];
+    if (file.size > 50 * 1024 * 1024) {
+      alert('حجم فایل نباید بیشتر از 50 مگابایت باشد');
+      return;
+    }
+    selectedFile.value = file;
   }
 };
 
 const handleFileDrop = (event: DragEvent) => {
   isDragging.value = false;
   if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
-    selectedFile.value = event.dataTransfer.files[0];
+    const file = event.dataTransfer.files[0];
+    if (file.size > 50 * 1024 * 1024) {
+      alert('حجم فایل نباید بیشتر از 50 مگابایت باشد');
+      return;
+    }
+    selectedFile.value = file;
   }
 };
 
@@ -305,24 +490,23 @@ const removeTag = (index: number) => {
   form.value.tags.splice(index, 1);
 };
 
+const addKeyword = () => {
+  if (keywordInput.value.trim() && !form.value.metadata.keywords.includes(keywordInput.value.trim())) {
+    form.value.metadata.keywords.push(keywordInput.value.trim());
+    keywordInput.value = '';
+  }
+};
+
+const removeKeyword = (index: number) => {
+  form.value.metadata.keywords.splice(index, 1);
+};
+
 const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 بایت';
   const k = 1024;
   const sizes = ['بایت', 'کیلوبایت', 'مگابایت', 'گیگابایت'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-};
-
-const getCategoryLabel = (category: string) => {
-  const labels: Record<string, string> = {
-    contracts: 'قراردادها',
-    reports: 'گزارشات',
-    minutes: 'صورتجلسات',
-    financial: 'مالی',
-    hr: 'پرسنلی',
-    other: 'سایر'
-  };
-  return labels[category] || 'انتخاب نشده';
 };
 
 const getStatusLabel = (status: string) => {
@@ -333,14 +517,52 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status;
 };
 
+const getConfidentialityLabel = (level: string) => {
+  const labels: Record<string, string> = {
+    public: 'عمومی',
+    internal: 'داخلی',
+    confidential: 'محرمانه',
+    secret: 'سری'
+  };
+  return labels[level] || level;
+};
+
 const handleSubmit = async () => {
-  if (!canSubmit.value) return;
+  if (!canSubmit.value || !selectedFile.value) return;
 
   isSubmitting.value = true;
+  uploadProgress.value = 0;
 
-  setTimeout(() => {
+  const progressInterval = setInterval(() => {
+    if (uploadProgress.value < 90) {
+      uploadProgress.value += 10;
+    }
+  }, 200);
+
+  try {
+    await documentService.uploadDocument({
+      title: form.value.title,
+      description: form.value.description,
+      category_id: form.value.category_id,
+      status: form.value.status,
+      tags: form.value.tags,
+      metadata: form.value.metadata,
+      file: selectedFile.value
+    });
+
+    uploadProgress.value = 100;
+    clearInterval(progressInterval);
+
+    setTimeout(() => {
+      router.push({ name: 'documents' });
+    }, 500);
+  } catch (error) {
+    clearInterval(progressInterval);
+    uploadProgress.value = 0;
+    console.error('Upload failed:', error);
+    alert('خطا در بارگذاری سند. لطفا دوباره تلاش کنید.');
+  } finally {
     isSubmitting.value = false;
-    router.push({ name: 'documents' });
-  }, 2000);
+  }
 };
 </script>

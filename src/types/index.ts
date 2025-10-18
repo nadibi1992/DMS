@@ -22,6 +22,16 @@ export interface Document {
   version: number;
   status: 'draft' | 'pending' | 'approved' | 'rejected';
   tags?: string[];
+  metadata?: {
+    author?: string;
+    subject?: string;
+    keywords?: string[];
+    language?: string;
+    documentDate?: string;
+    expiryDate?: string;
+    confidentialityLevel?: 'public' | 'internal' | 'confidential' | 'secret';
+    customFields?: Record<string, any>;
+  };
 }
 
 export interface DocumentCategory {
