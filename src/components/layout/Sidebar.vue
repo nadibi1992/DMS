@@ -220,7 +220,8 @@ import {
   UserCircle,
   FolderTree,
   GitBranch,
-  Shield
+  Shield,
+  Activity
 } from 'lucide-vue-next';
 
 defineProps<{
